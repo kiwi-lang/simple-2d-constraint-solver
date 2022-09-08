@@ -5,7 +5,19 @@
 #include <cassert>
 #include <iostream>
 
+#include "Eigen/Core"
+
+void atg_scs::Matrix::dump()
+{
+    Eigen::IOFormat fmt;
+    std::cout << m_matrix << std::endl;
+}
+
 atg_scs::Matrix::Matrix()
+{
+}
+
+atg_scs::Matrix::Matrix(MatrixType const &mat) : m_matrix(mat)
 {
 }
 

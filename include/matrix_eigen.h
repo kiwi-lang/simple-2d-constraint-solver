@@ -12,13 +12,20 @@
 
 namespace atg_scs
 {
+
     class Matrix
     {
+        template <int T_Stride, int T_Entries>
+        friend class SparseMatrix;
+
         typedef Eigen::MatrixXd MatrixType;
 
     public:
+        void dump();
+
         Matrix();
         Matrix(int width, int height, double value = 0.0);
+        Matrix(MatrixType const &Matrix);
         ~Matrix();
 
         void initialize(int width, int height, double value);
@@ -62,8 +69,8 @@ namespace atg_scs
         void pmadd(Matrix &b, double s);
 
         void transpose(Matrix *target);
-        int getWidth() const { return m_matrix.cols(); }
-        int getHeight() const { return m_matrix.rows(); }
+        int getWidth() const { return int(m_matrix.cols()); }
+        int getHeight() const { return int(m_matrix.rows()); }
 
         __forceinline void fastRowSwap(int a, int b)
         {

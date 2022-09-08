@@ -31,12 +31,23 @@ TEST(SparseMatrixTests, MatrixTransposeMultiplication) {
     s.set(2, 0, 0, 4.0);
     s.set(2, 1, 0, 2.0);
 
+
+#define DUMP(m) std::cout << std::endl<< #m << std::endl; m.dump();
+
+
     m.set(m_data);
     m.transpose(&m_T);
-    m.multiply(m_T, &resultReference);
-    
-    s.multiplyTranspose(s, &result);
 
+    DUMP(m);
+    DUMP(m_T);
+    m.multiply(m_T, &resultReference);
+    DUMP(resultReference);
+
+
+    DUMP(s)
+    s.multiplyTranspose(s, &result);
+    DUMP(result);
+ 
     compareMatrix(result, resultReference);
 
     m.destroy();
