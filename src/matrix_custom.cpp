@@ -3,11 +3,25 @@
 #include <algorithm>
 #include <assert.h>
 
+#include "Eigen/Dense"
+#include "Eigen/Core"
+
+#include <iostream>
+
 atg_scs::Matrix::Matrix() {
     m_matrix = nullptr;
     m_data = nullptr;
     m_width = m_height = 0;
     m_capacityWidth = m_capacityHeight = 0;
+}
+
+void atg_scs::Matrix::dump() {
+    if (m_data != nullptr) {
+        auto mmap = Eigen::Map<Eigen::MatrixXd>(m_data, getHeight(), getWidth());
+
+    Eigen::IOFormat fmt;
+    std::cout << mmap.format(fmt);
+    }
 }
 
 atg_scs::Matrix::Matrix(int width, int height, double value) {

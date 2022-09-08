@@ -10,6 +10,9 @@ namespace atg_scs {
             Matrix(int width, int height, double value = 0.0);
             ~Matrix();
 
+
+            void dump();
+
             void initialize(int width, int height, double value);
             void initialize(int width, int height);
             void resize(int width, int height);
