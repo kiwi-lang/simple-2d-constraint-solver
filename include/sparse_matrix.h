@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#if 0
+#include "sparse_matrix_eigen.h"
+#else
 namespace atg_scs
 {
     class Matrix;
@@ -47,7 +50,7 @@ namespace atg_scs
                                        ? height
                                        : m_capacityHeight;
 
-                m_data = new double[(size_t)T_Stride * T_Entries * m_capacityHeight];
+                m_data = new double[(size_t)T_Stride * (T_Entries + 1) * m_capacityHeight];
                 m_matrix = new double *[m_capacityHeight];
                 m_blockData = new uint8_t[(size_t)m_capacityHeight * T_Entries];
             }
@@ -330,5 +333,7 @@ namespace atg_scs
         int m_capacityHeight;
     };
 } /* namespace atg_scs */
+
+#endif
 
 #endif /* ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SPARSE_MATRIX_H */

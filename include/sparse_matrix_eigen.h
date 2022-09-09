@@ -6,10 +6,16 @@
 
 namespace atg_scs
 {
+    /* Fake sparse matrix: this is actually much slower than the sparce matrix
+     *
+     * A.llt().solve(b)
+     */
     template <int T_Stride = 3, int T_Entries = 2>
     class SparseMatrix
     {
     public:
+        typedef Eigen::Matrix<uint8_t, -1, -1> BlockMatrix;
+
         void initialize(int width, int height)
         {
             resize(width, height);
@@ -24,6 +30,7 @@ namespace atg_scs
         void resize(int width, int height)
         {
             m_matrix = Eigen::MatrixXd::Zero(height, width);
+            m_block = BlockMatrix::Zero(height, T_Entries);
         }
 
         void destroy()
@@ -46,6 +53,15 @@ namespace atg_scs
         inline void setBlock(int row, int entry, uint8_t index)
         {
             // this is problematic, it can move blocks everywhere
+            int previous = m_block(row, entry);
+
+            if (previous != 0)
+            {
+                auto old_block = m_matrix.block(row, previous * T_Stride, 0, T_Stride);
+                m_matrix.block(row, index * T_Stride, 0, T_Stride) = old_block;
+            }
+
+            m_block(row, entry) = index;
         }
 
         inline void set(int row, int entry, int slice, double v)
@@ -54,7 +70,8 @@ namespace atg_scs
             assert(entry >= 0 && entry < T_Entries);
             assert(slice < T_Stride);
 
-            m_matrix(row, entry * T_Stride + slice) = v;
+            int offset = m_block(row, entry);
+            m_matrix(row, offset * T_Stride + slice) = v;
         }
 
         inline double get(int row, int entry, int slice)
@@ -63,7 +80,8 @@ namespace atg_scs
             assert(entry >= 0 && entry < T_Entries);
             assert(slice < T_Stride);
 
-            return m_matrix(row, entry * T_Stride + slice);
+            int offset = m_block(row, entry);
+            return m_matrix(row, offset * T_Stride + slice);
         }
 
         inline void setEmpty(int row, int col)
@@ -72,16 +90,19 @@ namespace atg_scs
             assert(col >= 0 && col < T_Entries);
 
             // Removes a block
-            m_matrix.block(row, col * T_Stride, 0, T_Stride) = 0;
+            int offset = m_block(row, entry);
+            m_matrix.block(row, offset * T_Stride, 0, T_Stride) = 0;
         }
 
         void multiply(Matrix &b, Matrix *target) const
         {
+            target->initialize(b.getWidth(), getHeight());
             target->m_matrix = m_matrix * b.m_matrix;
         }
 
         void multiplyTranspose(const SparseMatrix<T_Stride, T_Entries> &b_T, Matrix *target) const
         {
+            target->initialize(b_T.getHeight(), getHeight());
             // a: (H x W)
             // b: (p x W)
             // R: (H x p)
@@ -90,6 +111,8 @@ namespace atg_scs
 
         void transposeMultiplyVector(Matrix &b, Matrix *target) const
         {
+            target->initialize(1, getWidth());
+
             // b : (H x 1)
             const int b_w = b.getWidth();
             const int b_h = b.getHeight();
@@ -103,16 +126,21 @@ namespace atg_scs
 
         void rightScale(Matrix &scale, SparseMatrix<T_Stride> *target)
         {
+            target->initialize(getWidth(), getHeight());
+
             auto vector = scale.m_matrix.col(0).transpose().array();
             target->m_matrix = (m_matrix.array().rowwise() * vector).matrix();
         }
         void leftScale(Matrix &scale, SparseMatrix<T_Stride> *target)
         {
+            target->initialize(getWidth(), getHeight());
+
             auto vector = scale.m_matrix.col(0).array();
             target->m_matrix = (m_matrix.array().colwise() * vector).matrix();
         }
 
     private:
+        BlockMatrix m_block;
         Eigen::MatrixXd m_matrix;
     };
 

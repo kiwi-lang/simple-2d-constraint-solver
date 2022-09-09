@@ -10,7 +10,8 @@
 void atg_scs::Matrix::dump()
 {
     Eigen::IOFormat fmt;
-    std::cout << m_matrix << std::endl;
+    std::cout << m_matrix.rows() << 'x' << m_matrix.cols() << std::endl;
+    // std::cout << m_matrix << std::endl;
 }
 
 atg_scs::Matrix::Matrix()

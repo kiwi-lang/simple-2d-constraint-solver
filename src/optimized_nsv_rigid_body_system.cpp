@@ -135,14 +135,14 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
 
         const int n_f = m_constraints[j]->getConstraintCount();
         for (int k = 0; k < n_f; ++k, ++j_f) {
-            /*
+            //*
             for (int i = 0; i < m_constraints[j]->m_bodyCount; ++i) {
                 const int index = m_constraints[j]->m_bodies[i]->index;
 
                 if (index == -1) continue;
 
                 m_iv.J_sparse.setBlock(j_f, i, index);
-            }*/
+            }//*/
 
             for (int i = 0; i < m_constraints[j]->m_bodyCount * 3; ++i) {
                 const int index = m_constraints[j]->m_bodies[i / 3]->index;
@@ -160,9 +160,9 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
     }
 
 
-    Matrix Mat;
-    m_iv.J_sparse.expand(&Mat);
-    Mat.dump();
+    //Matrix Mat;
+    //m_iv.J_sparse.expand(&Mat);
+    //Mat.dump();
 
     m_iv.q_dot.resize(1, n * 3);
     for (int i = 0; i < n; ++i) {
