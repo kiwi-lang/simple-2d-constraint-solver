@@ -28,10 +28,10 @@ set_property(TARGET gtest PROPERTY FOLDER "gtest")
 set_property(TARGET gtest_main PROPERTY FOLDER "gtest")
 
 # ========================================================
-
 if(USE_EIGEN)
     include_directories(dependencies/eigen)
     add_definitions(-DATG_S2C_USE_EIGEN)
+    add_definitions(/arch:AVX2)
 endif(USE_EIGEN)
 
 add_library(simple-2d-constraint-solver STATIC

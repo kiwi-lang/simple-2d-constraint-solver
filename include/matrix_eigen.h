@@ -18,7 +18,7 @@ namespace atg_scs
         template <int T_Stride, int T_Entries>
         friend class SparseMatrix;
 
-        typedef Eigen::MatrixXd MatrixType;
+        typedef Eigen::MatrixXf MatrixType;
 
     public:
         void dump();
