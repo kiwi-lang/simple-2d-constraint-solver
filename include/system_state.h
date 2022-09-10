@@ -1,6 +1,8 @@
 #ifndef ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SYSTEM_STATE_H
 #define ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SYSTEM_STATE_H
 
+#include "wrapped_pointer.h"
+
 namespace atg_scs {
     class SystemState {
         public:
@@ -15,28 +17,28 @@ namespace atg_scs {
             void velocityAtPoint(double x, double y, double *v_x, double *v_y, int body);
             void applyForce(double x_l, double y_l, double f_x, double f_y, int body);
 
-            int *indexMap;
+            Ptr<int> indexMap;
 
-            double *a_theta;
-            double *v_theta;
-            double *theta;
+            Ptr<double> a_theta;
+            Ptr<double> v_theta;
+            Ptr<double> theta;
 
-            double *a_x;
-            double *a_y;
-            double *v_x;
-            double *v_y;
-            double *p_x;
-            double *p_y;
+            Ptr<double> a_x;
+            Ptr<double> a_y;
+            Ptr<double> v_x;
+            Ptr<double> v_y;
+            Ptr<double> p_x;
+            Ptr<double> p_y;
 
-            double *f_x;
-            double *f_y;
-            double *t;
+            Ptr<double> f_x;
+            Ptr<double> f_y;
+            Ptr<double> t;
 
-            double *r_x;
-            double *r_y;
-            double *r_t;
+            Ptr<double> r_x;
+            Ptr<double> r_y;
+            Ptr<double> r_t;
 
-            double *m;
+            Ptr<double> m;
 
             int n;
             int n_c;

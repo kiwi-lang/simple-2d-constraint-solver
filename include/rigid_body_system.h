@@ -7,6 +7,7 @@
 #include "matrix.h"
 #include "sparse_matrix.h"
 #include "system_state.h"
+#include "wrapped_pointer.h"
 
 #include <vector>
 
@@ -57,10 +58,10 @@ namespace atg_scs {
 
             SystemState m_state;
 
-            long long *m_odeSolveMicroseconds;
-            long long *m_constraintSolveMicroseconds;
-            long long *m_forceEvalMicroseconds;
-            long long *m_constraintEvalMicroseconds;
+           Ptr<long long> m_odeSolveMicroseconds;
+           Ptr<long long> m_constraintSolveMicroseconds;
+           Ptr<long long> m_forceEvalMicroseconds;
+           Ptr<long long> m_constraintEvalMicroseconds;
             long long m_frameIndex;
     };
 } /* namespace atg_scs */

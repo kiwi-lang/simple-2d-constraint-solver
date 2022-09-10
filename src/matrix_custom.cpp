@@ -65,8 +65,8 @@ void atg_scs::Matrix::resize(int width, int height) {
             ? height
             : m_capacityHeight;
 
-        m_data = new double[(size_t)m_capacityWidth * m_capacityHeight];
-        m_matrix = new double *[m_capacityHeight];
+        m_data.make(m_capacityWidth * m_capacityHeight);
+        m_matrix.make(m_capacityHeight);
     }
 
     m_height = height;
@@ -82,11 +82,8 @@ void atg_scs::Matrix::destroy() {
         return;
     }
 
-    delete[] m_matrix;
-    delete[] m_data;
-
-    m_matrix = nullptr;
-    m_data = nullptr;
+    m_matrix.destroy();
+    m_data.destroy();
 
     m_width = m_height = 0;
     m_capacityWidth = m_capacityHeight = 0;

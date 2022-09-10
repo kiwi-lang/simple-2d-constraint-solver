@@ -2,6 +2,7 @@
 #define ATG_SIMPLE_2D_CONSTRAINT_SOLVER_MATRIX_CUSTOM_H
 
 #include <assert.h>
+#include "wrapped_pointer.h"
 
 namespace atg_scs {
     class Matrix {
@@ -70,8 +71,8 @@ namespace atg_scs {
             }
 
         protected:
-            double **m_matrix;
-            double *m_data;
+            Ptr<double*>m_matrix;
+            Ptr<double> m_data;
             int m_width;
             int m_height;
             int m_capacityWidth;

@@ -2,7 +2,7 @@
 #define ATG_SIMPLE_2D_CONSTRAINT_SOLVER_OPTIMIZED_NSV_RIGID_BODY_SYSTEM_H
 
 #include "rigid_body_system.h"
-
+#include "wrapped_pointer.h"
 #include "sle_solver.h"
 #include "nsv_ode_solver.h"
 
@@ -26,7 +26,7 @@ namespace atg_scs {
 
         protected:
             NsvOdeSolver m_odeSolver;
-            SleSolver *m_sleSolver;
+            Ptr<SleSolver> m_sleSolver;
 
         protected:
             struct IntermediateValues {

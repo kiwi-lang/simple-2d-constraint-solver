@@ -87,7 +87,7 @@ void atg_scs::Spring::getEnds(double *x_1, double *y_1, double *x_2, double *y_2
 }
 
 double atg_scs::Spring::energy() const {
-    if (m_body1 == nullptr || m_body2 == nullptr) return 0;
+    if (!m_body1 || !m_body2) return 0;
 
     double x1, y1;
     double x2, y2;

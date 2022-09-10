@@ -4,7 +4,7 @@
 #include "system_state.h"
 #include "rigid_body.h"
 #include "matrix.h"
-
+#include "wrapped_pointer.h"
 #include <cfloat>
 
 namespace atg_scs {
@@ -32,7 +32,7 @@ namespace atg_scs {
 
             int m_index;
             int m_bodyCount;
-            RigidBody *m_bodies[MaxBodyCount];
+            Ptr<RigidBody> m_bodies[MaxBodyCount];
 
             double F_x[MaxConstraintCount][MaxBodyCount];
             double F_y[MaxConstraintCount][MaxBodyCount];

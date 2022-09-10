@@ -5,10 +5,10 @@
 #include <cmath>
 
 atg_scs::RigidBodySystem::RigidBodySystem() {
-    m_odeSolveMicroseconds = new long long[ProfilingSamples];
-    m_constraintSolveMicroseconds = new long long[ProfilingSamples];
-    m_forceEvalMicroseconds = new long long[ProfilingSamples];
-    m_constraintEvalMicroseconds = new long long[ProfilingSamples];
+    m_odeSolveMicroseconds.make(ProfilingSamples);
+    m_constraintSolveMicroseconds.make(ProfilingSamples);
+    m_forceEvalMicroseconds.make(ProfilingSamples);
+    m_constraintEvalMicroseconds.make(ProfilingSamples);
     m_frameIndex = 0;
 
     for (int i = 0; i < ProfilingSamples; ++i) {
@@ -20,10 +20,10 @@ atg_scs::RigidBodySystem::RigidBodySystem() {
 }
 
 atg_scs::RigidBodySystem::~RigidBodySystem() {
-    delete[] m_odeSolveMicroseconds;
-    delete[] m_constraintSolveMicroseconds;
-    delete[] m_forceEvalMicroseconds;
-    delete[] m_constraintEvalMicroseconds;
+    m_odeSolveMicroseconds.destroy();
+    m_constraintSolveMicroseconds.destroy();
+    m_forceEvalMicroseconds.destroy();
+    m_constraintEvalMicroseconds.destroy();
 
     m_state.destroy();
 }
@@ -100,19 +100,19 @@ float atg_scs::RigidBodySystem::findAverage(long long *samples) {
 }
 
 float atg_scs::RigidBodySystem::getOdeSolveMicroseconds() const {
-    return findAverage(m_odeSolveMicroseconds);
+    return findAverage(m_odeSolveMicroseconds.get());
 }
 
 float atg_scs::RigidBodySystem::getConstraintSolveMicroseconds() const {
-    return findAverage(m_constraintSolveMicroseconds);
+    return findAverage(m_constraintSolveMicroseconds.get());
 }
 
 float atg_scs::RigidBodySystem::getConstraintEvalMicroseconds() const {
-    return findAverage(m_constraintEvalMicroseconds);
+    return findAverage(m_constraintEvalMicroseconds.get());
 }
 
 float atg_scs::RigidBodySystem::getForceEvalMicroseconds() const {
-    return findAverage(m_forceEvalMicroseconds);
+    return findAverage(m_forceEvalMicroseconds.get());
 }
 
 void atg_scs::RigidBodySystem::populateSystemState() {

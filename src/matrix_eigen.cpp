@@ -33,17 +33,18 @@ atg_scs::Matrix::~Matrix()
 
 void atg_scs::Matrix::initialize(int width, int height, double value)
 {
-    m_matrix = MatrixType::Constant(height, width, value);
+    m_matrix.resize(height, width);
+    m_matrix.fill(value);
 }
 
 void atg_scs::Matrix::initialize(int width, int height)
 {
-    m_matrix = MatrixType::Zero(height, width);
+    resize(width, height);
 }
 
 void atg_scs::Matrix::resize(int width, int height)
 {
-    m_matrix = MatrixType::Zero(height, width);
+    m_matrix.resize(height, width);
 }
 
 void atg_scs::Matrix::destroy()

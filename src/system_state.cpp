@@ -47,31 +47,33 @@ void atg_scs::SystemState::copy(const SystemState *state) {
         return;
     }
 
-    std::memcpy((void *)indexMap, (void *)state->indexMap, sizeof(int) * n_c);
+    std::memcpy((void *)indexMap.get(), (void*)state->indexMap.get(), sizeof(int) * n_c);
 
-    std::memcpy((void *)a_theta, (void *)state->a_theta, sizeof(double) * n);
-    std::memcpy((void *)v_theta, (void *)state->v_theta, sizeof(double) * n);
-    std::memcpy((void *)theta, (void *)state->theta, sizeof(double) * n);
+    std::memcpy((void *)a_theta.get(), (void *)state->a_theta.get(), sizeof(double) * n);
+    std::memcpy((void *)v_theta.get(), (void *)state->v_theta.get(), sizeof(double) * n);
+    std::memcpy((void *)theta.get(), (void *)state->theta.get(), sizeof(double) * n);
 
-    std::memcpy((void *)a_x, (void *)state->a_x, sizeof(double) * n);
-    std::memcpy((void *)a_y, (void *)state->a_y, sizeof(double) * n);
-    std::memcpy((void *)v_x, (void *)state->v_x, sizeof(double) * n);
-    std::memcpy((void *)v_y, (void *)state->v_y, sizeof(double) * n);
-    std::memcpy((void *)p_x, (void *)state->p_x, sizeof(double) * n);
-    std::memcpy((void *)p_y, (void *)state->p_y, sizeof(double) * n);
+    std::memcpy((void *)a_x.get(), (void *)state->a_x.get(), sizeof(double) * n);
+    std::memcpy((void *)a_y.get(), (void *)state->a_y.get(), sizeof(double) * n);
+    std::memcpy((void *)v_x.get(), (void *)state->v_x.get(), sizeof(double) * n);
+    std::memcpy((void *)v_y.get(), (void *)state->v_y.get(), sizeof(double) * n);
+    std::memcpy((void *)p_x.get(), (void *)state->p_x.get(), sizeof(double) * n);
+    std::memcpy((void *)p_y.get(), (void *)state->p_y.get(), sizeof(double) * n);
 
-    std::memcpy((void *)f_x, (void *)state->f_x, sizeof(double) * n);
-    std::memcpy((void *)f_y, (void *)state->f_y, sizeof(double) * n);
-    std::memcpy((void *)t, (void *)state->t, sizeof(double) * n);
+    std::memcpy((void *)f_x.get(), (void *)state->f_x.get(), sizeof(double) * n);
+    std::memcpy((void *)f_y.get(), (void *)state->f_y.get(), sizeof(double) * n);
+    std::memcpy((void *)t.get(), (void *)state->t.get(), sizeof(double) * n);
 
-    std::memcpy((void *)m, (void *)state->m, sizeof(double) * n);
+    std::memcpy((void *)m.get(), (void *)state->m.get(), sizeof(double) * n);
 
-    std::memcpy((void *)r_x, (void *)state->r_x, sizeof(double) * n_c * 2);
-    std::memcpy((void *)r_y, (void *)state->r_y, sizeof(double) * n_c * 2);
-    std::memcpy((void *)r_t, (void *)state->r_t, sizeof(double) * n_c * 2);
+    std::memcpy((void *)r_x.get(), (void *)state->r_x.get(), sizeof(double) * n_c * 2);
+    std::memcpy((void *)r_y.get(), (void *)state->r_y.get(), sizeof(double) * n_c * 2);
+    std::memcpy((void *)r_t.get(), (void *)state->r_t.get(), sizeof(double) * n_c * 2);
 }
 
 void atg_scs::SystemState::resize(int bodyCount, int constraintCount) {
+    assert(bodyCount > 0 && constraintCount > 0);
+
     if (n >= bodyCount && n_c >= constraintCount) {
         return;
     }
@@ -81,56 +83,56 @@ void atg_scs::SystemState::resize(int bodyCount, int constraintCount) {
     n = bodyCount;
     n_c = constraintCount;
 
-    indexMap = new int[n_c];
+    indexMap.make(n_c);
 
-    a_theta = new double[n];
-    v_theta = new double[n];
-    theta = new double[n];
+    a_theta.make(n);
+    v_theta.make(n);
+    theta.make(n);
 
-    a_x = new double[n];
-    a_y = new double[n];
-    v_x = new double[n];
-    v_y = new double[n];
-    p_x = new double[n];
-    p_y = new double[n];
+    a_x.make(n);
+    a_y.make(n);
+    v_x.make(n);
+    v_y.make(n);
+    p_x.make(n);
+    p_y.make(n);
 
-    f_x = new double[n];
-    f_y = new double[n];
-    t = new double[n];
+    f_x.make(n);
+    f_y.make(n);
+    t.make(n);
 
-    m = new double[n];
+    m.make(n);
 
-    r_x = new double[(size_t)n_c * 2];
-    r_y = new double[(size_t)n_c * 2];
-    r_t = new double[(size_t)n_c * 2];
+    r_x.make(n_c * 2);
+    r_y.make(n_c * 2);
+    r_t.make(n_c * 2);
 }
 
 void atg_scs::SystemState::destroy() {
     if (n > 0) {
-        freeArray(a_theta);
-        freeArray(v_theta);
-        freeArray(theta);
+        (a_theta.destroy());
+        (v_theta.destroy());
+        (theta.destroy());
 
-        freeArray(a_x);
-        freeArray(a_y);
-        freeArray(v_x);
-        freeArray(v_y);
-        freeArray(p_x);
-        freeArray(p_y);
+        (a_x.destroy());
+        (a_y.destroy());
+        (v_x.destroy());
+        (v_y.destroy());
+        (p_x.destroy());
+        (p_y.destroy());
 
-        freeArray(f_x);
-        freeArray(f_y);
-        freeArray(t);
+        (f_x.destroy());
+        (f_y.destroy());
+        (t.destroy());
 
-        freeArray(m);
+        (m.destroy());
     }
 
     if (n_c > 0) {
-        freeArray(indexMap);
+        (indexMap.destroy());
 
-        freeArray(r_x);
-        freeArray(r_y);
-        freeArray(r_t);
+        (r_x.destroy());
+        (r_y.destroy());
+        (r_t.destroy());
     }
 
     n = 0;

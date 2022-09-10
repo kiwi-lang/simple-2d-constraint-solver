@@ -2,7 +2,7 @@
 #define ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SPRING_H
 
 #include "force_generator.h"
-
+#include "wrapped_pointer.h"
 #include "rigid_body.h"
 
 namespace atg_scs {
@@ -26,8 +26,8 @@ namespace atg_scs {
             double m_p2_x;
             double m_p2_y;
 
-            RigidBody *m_body1;
-            RigidBody *m_body2;
+            Ptr<RigidBody> m_body1;
+            Ptr<RigidBody> m_body2;
     };
 } /* namespace atg_scs */
 

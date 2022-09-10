@@ -4,10 +4,15 @@
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
+#include <iostream>
+#include "wrapped_pointer.h"
 
 #if 0
 #include "sparse_matrix_eigen.h"
 #else
+
+#define DEBUG(X) std::cout << #X << std::endl
+
 namespace atg_scs
 {
     class Matrix;
@@ -49,10 +54,10 @@ namespace atg_scs
                 m_capacityHeight = (height > m_capacityHeight)
                                        ? height
                                        : m_capacityHeight;
-
-                m_data = new double[(size_t)T_Stride * (T_Entries + 1) * m_capacityHeight];
-                m_matrix = new double *[m_capacityHeight];
-                m_blockData = new uint8_t[(size_t)m_capacityHeight * T_Entries];
+                
+                m_data.make(T_Stride * (T_Entries) * m_capacityHeight);
+                m_matrix.make(m_capacityHeight);
+                m_blockData.make(m_capacityHeight * T_Entries);
             }
 
             m_height = height;
@@ -66,18 +71,14 @@ namespace atg_scs
 
         void destroy()
         {
-            if (m_matrix == nullptr)
+            if (!m_matrix.valid())
             {
                 return;
             }
 
-            delete[] m_matrix;
-            delete[] m_data;
-            delete[] m_blockData;
-
-            m_matrix = nullptr;
-            m_data = nullptr;
-            m_blockData = nullptr;
+            m_matrix.destroy();
+            m_data.destroy();
+            m_blockData.destroy();
 
             m_width = m_height = 0;
         }
@@ -324,9 +325,9 @@ namespace atg_scs
         __forceinline int getHeight() const { return m_height; }
 
     protected:
-        double **m_matrix;
-        double *m_data;
-        uint8_t *m_blockData;
+        Ptr<double*> m_matrix;
+        Ptr<double> m_data;
+        Ptr<uint8_t> m_blockData;
 
         int m_width;
         int m_height;

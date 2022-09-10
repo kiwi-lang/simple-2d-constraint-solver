@@ -2,7 +2,7 @@
 #define ATG_SIMPLE_2D_CONSTRAINT_SOLVER_GENERIC_RIGID_BODY_SYSTEM_H
 
 #include "rigid_body_system.h"
-
+#include "wrapped_pointer.h"
 #include "sle_solver.h"
 #include "ode_solver.h"
 
@@ -21,8 +21,8 @@ namespace atg_scs {
                     long long *solveTime);
 
         protected:
-            OdeSolver *m_odeSolver;
-            SleSolver *m_sleSolver;
+            Ptr<OdeSolver> m_odeSolver;
+            Ptr<SleSolver> m_sleSolver;
 
         protected:
             struct IntermediateValues {
