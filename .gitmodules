@@ -1,3 +1,0 @@
-[submodule "dependencies/eigen"]
-	path = dependencies/eigen
-	url = git@gitlab.com:libeigen/eigen.git
