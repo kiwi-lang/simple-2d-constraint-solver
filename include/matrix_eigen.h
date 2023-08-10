@@ -14,7 +14,7 @@ namespace atg_scs
 {
     class Matrix
     {
-        typedef Eigen::MatrixXd MatrixType;
+        typedef Eigen::MatrixXf MatrixType;
 
     public:
         Matrix();
@@ -73,7 +73,7 @@ namespace atg_scs
             m_matrix.row(b) = row_a;
         }
 
-    protected:
+    public:
         MatrixType m_matrix;
     };
 } /* namespace atg_scs */

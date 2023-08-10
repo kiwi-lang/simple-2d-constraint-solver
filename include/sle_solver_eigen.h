@@ -1,23 +1,23 @@
-#ifndef ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SLE_SOLVER_H
-#define ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SLE_SOLVER_H
+#ifndef ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SLE_EIGEN_SOLVER_H
+#define ATG_SIMPLE_2D_CONSTRAINT_SOLVER_SLE_EIGEN_SOLVER_H
 
 #include "matrix.h"
-#include "matrix_sparse.h"
+#include "sparse_matrix.h"
 
 namespace atg_scs {
     // Simple Linear Equation Solver
-    class SleSolver {
+    class SleEigenSolver {
         public:
-            SleSolver(bool supportsLimits);
-            virtual ~SleSolver();
-            
-            // Solves for (x) J * X + W = right
+            SleEigenSolver(bool supportsLimits);
+            virtual ~SleEigenSolver();
+
             virtual bool solve(
                     SparseMatrix<3> &J,
                     Matrix &W,
                     Matrix &right,
                     Matrix *result,
                     Matrix *previous);
+            
             virtual bool solveWithLimits(
                     SparseMatrix<3> &J,
                     Matrix &W,

@@ -4,6 +4,7 @@
 #include "system_state.h"
 
 namespace atg_scs {
+    // Ordinary Differential Equation Solver
     class OdeSolver {
         public:
             OdeSolver();

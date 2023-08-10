@@ -1,4 +1,4 @@
-#include "../include/rk4_ode_solver.h"
+#include "../include/ode_solver_rk4.h"
 
 atg_scs::Rk4OdeSolver::Rk4OdeSolver() {
     m_stage = m_nextStage = RkStage::Undefined;

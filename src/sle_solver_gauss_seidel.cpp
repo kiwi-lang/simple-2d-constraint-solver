@@ -1,4 +1,4 @@
-#include "../include/gauss_seidel_sle_solver.h"
+#include "../include/sle_solver_gauss_seidel.h"
 
 #include <cmath>
 #include <assert.h>
@@ -18,14 +18,14 @@ atg_scs::GaussSeidelSleSolver::~GaussSeidelSleSolver() {
 }
 
 bool atg_scs::GaussSeidelSleSolver::solve(
-        SparseMatrix<3> &J,
-        Matrix &W,
-        Matrix &right,
+        SparseMatrix<3> &J, // J_sparse (3n x m_f)
+        Matrix &W,          // M_inv   
+        Matrix &right,      // right
         Matrix *previous,
         Matrix *result)
 {
     const int n = right.getHeight();
-    
+
     result->resize(1, n);
 
     if (previous != nullptr && previous->getHeight() == n) {
@@ -39,16 +39,22 @@ bool atg_scs::GaussSeidelSleSolver::solve(
         const double maxDelta = solveIteration(
                 m_M,
                 right,
-                result,
+                result, 
                 result);
-
+ 
         if (maxDelta < m_minDelta) {
-            return true;
+            return true; 
         }
     }
 
     return false;
 }
+
+
+#ifndef SAVETHIS
+#define SAVETHIS(X)
+#endif
+
 
 bool atg_scs::GaussSeidelSleSolver::solveWithLimits(
     SparseMatrix<3> &J,
@@ -67,9 +73,22 @@ bool atg_scs::GaussSeidelSleSolver::solveWithLimits(
         result->set(previous);
     }
 
+    // J: 33 x 36
+    // W: 36 x 1
+    // (J .* W) * J^T 
     J.rightScale(W, &m_reg);
     m_reg.multiplyTranspose(J, &m_M);
 
+
+    SAVETHIS(J);
+    SAVETHIS(m_reg);
+    SAVETHIS(W);
+    SAVETHIS(m_M);
+
+    // M: (33 x 33)
+
+    // Solve: M * x = right (33 x 1)
+    
     for (int i = 0; i < m_maxIterations; ++i) {
         const double maxDelta = solveIteration(
             m_M,
@@ -108,7 +127,7 @@ double atg_scs::GaussSeidelSleSolver::solveIteration(
         const double k_next_i =
             (1 / left.get(i, i)) * (right.get(0, i) - s0 - s1);
 
-        const double min_k = std::fmax(1E-3, k->get(0, i));
+        const double min_k = 1E-3 > k->get(0, i) ? 1E-3 : k->get(0, i);
         const double delta = (std::abs(k_next_i) - min_k) / min_k;
         maxDifference = (delta > maxDifference)
             ? delta

@@ -5,7 +5,7 @@
 #include "constraint.h"
 #include "force_generator.h"
 #include "matrix.h"
-#include "sparse_matrix.h"
+#include "matrix_sparse.h"
 #include "system_state.h"
 
 #include <vector>

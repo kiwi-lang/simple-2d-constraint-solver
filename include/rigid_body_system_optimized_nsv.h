@@ -4,9 +4,10 @@
 #include "rigid_body_system.h"
 
 #include "sle_solver.h"
-#include "nsv_ode_solver.h"
+#include "ode_solver_nsv.h"
 
 namespace atg_scs {
+    // Navier-Slip https://arxiv.org/pdf/2103.08762.pdf ?
     class OptimizedNsvRigidBodySystem : public RigidBodySystem {
         public:
             OptimizedNsvRigidBodySystem();

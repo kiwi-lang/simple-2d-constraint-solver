@@ -1,4 +1,4 @@
-#include "../include/gaussian_elimination_sle_solver.h"
+#include "../include/sle_solver_gaussian_elimination.h"
 
 #include <cmath>
 #include <assert.h>
