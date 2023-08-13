@@ -1,6 +1,3 @@
-#include "../../../Source/RegressionHelper.h"
-
-
 #include "../include/rigid_body_system_optimized_nsv.h"
 
 #include <chrono>
@@ -137,6 +134,8 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
     m_iv.C.initialize(1, m_f);
     m_iv.limits.initialize(2, m_f);
 
+    static std::vector<int> constraint_to_block(m_f * 2);
+
     Constraint::Output constraintOutput;
     for (int j = 0, j_f = 0; j < m; ++j) {
         memset(&constraintOutput, 0, sizeof(Constraint::Output));
@@ -144,23 +143,10 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
         const int n_f = m_constraints[j]->getConstraintCount();
 
         for (int k = 0; k < n_f; ++k, ++j_f) {
-            // NOTE: MaxBodyCount==2
-
             for (int i = 0; i < m_constraints[j]->m_bodyCount; ++i) {
                 const int index = m_constraints[j]->m_bodies[i]->index;
 
                 if (index == -1) continue;
-
-                // REG_DEBUG(
-                //     COND(regression::debugcounter::get,
-                //         regression::fprint("constraint.txt", 
-                //             j_f, j, i, index, 
-                //             constraintOutput.J[k][i * 3 + 0],
-                //             constraintOutput.J[k][i * 3 + 1],
-                //             constraintOutput.J[k][i * 3 + 2]
-                //         )
-                //     )
-                // );
 
                 #ifndef ATG_S2C_USE_EIGEN_SPARSE
                     m_iv.J_sparse.setBlock(j_f, i, index, 
@@ -169,7 +155,7 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
                         constraintOutput.J[k][i * 3 + 2]
                     );
                 #else
-                    // constraint_to_block[i] = index;
+                    constraint_to_block[j_f * 2 + i] = index;
                     m_iv.J_sparse.setBlock(j_f, index * 3, 
                         constraintOutput.J[k][i * 3 + 0],
                         constraintOutput.J[k][i * 3 + 1],
@@ -186,8 +172,9 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
     }
     // REG_DEBUG(SAVETHIS(m_iv.J_sparse));
 
+    // Block assign
     m_iv.q_dot.resize(1, n * 3);
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {        
         m_iv.q_dot.set(0, i * 3 + 0, m_state.v_x[i]);
         m_iv.q_dot.set(0, i * 3 + 1, m_state.v_y[i]);
         m_iv.q_dot.set(0, i * 3 + 2, m_state.v_theta[i]);
@@ -253,9 +240,6 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
     m_iv.lambda.scale(1 / dt, &m_iv.reg0);
     m_iv.J_sparse.leftScale(m_iv.reg0, &m_iv.sreg0);
 
-    SAVETHIS(m_iv.reg0);
-    SAVETHIS(m_iv.sreg0);
-
 #ifndef ATG_S2C_USE_EIGEN_SPARSE
     for (int i = 0; i < m_f; ++i) {
         for (int j = 0; j < 2; ++j) {
@@ -265,46 +249,16 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
         }
     }
 #else
-    for (int i = 0, j_f = 0; i < m; ++i) {
-        Constraint* constraint = m_constraints[i];
-        const int n_f = constraint->getConstraintCount();
-        for (int j = 0; j < n_f; ++j, ++j_f) {
-            for (int k = 0; k < constraint->m_bodyCount; ++k) {
-                const int body = constraint->m_bodies[k]->index;
-                
-                m_state.r_x[j_f * 2 + k] = m_iv.sreg0.get(i, body + 0);
-                m_state.r_y[j_f * 2 + k] = m_iv.sreg0.get(i, body + 2);
-                m_state.r_t[j_f * 2 + k] = m_iv.sreg0.get(i, body + 3);
-            }
-        }
-    }
-
-    /*
+    // For all constraint
     for (int i = 0; i < m_f; ++i) {
+        // each have 2 body
         for (int j = 0; j < 2; ++j) {
-            int block = constraint_to_block[i];
-            m_state.r_x[i * 2 + j] = m_iv.sreg0.get(i, block + 0);
-            m_state.r_y[i * 2 + j] = m_iv.sreg0.get(i, block + 1);
-            m_state.r_t[i * 2 + j] = m_iv.sreg0.get(i, block + 2);
+            int block = constraint_to_block[i * 2 + j];
+            m_state.r_x[i * 2 + j] = m_iv.sreg0.get(i, block * 3 + 0);
+            m_state.r_y[i * 2 + j] = m_iv.sreg0.get(i, block * 3 + 1);
+            m_state.r_t[i * 2 + j] = m_iv.sreg0.get(i, block * 3 + 2);
         }
     } 
-    */
-
-    /*
-    for (int j = 0, j_f = 0; j < m; ++j) {
-        const int n_f = m_constraints[j]->getConstraintCount();
-        for (int k = 0; k < n_f; ++k, ++j_f) {
-            for (int i = 0; i < m_constraints[j]->m_bodyCount; ++i) {
-                const int index = m_constraints[j]->m_bodies[i]->index;
-                if (index == -1) continue;
-
-                // Each constraint has 2
-                m_state.r_x[j * 2 + i + k] = m_iv.sreg0.get(j * 2, index + 0);
-                m_state.r_y[j * 2 + i] = m_iv.sreg0.get(j * 2, index + 1);
-                m_state.r_t[j * 2 + i] = m_iv.sreg0.get(j * 2, index + 2);
-            }
-        }
-    }*/
 #endif
 
     for (int i = 0; i < n; ++i) {
@@ -319,6 +273,7 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
         for (int j = 0; j < n_f; ++j, ++j_f) {
             for (int k = 0; k < constraint->m_bodyCount; ++k) {
                 const int body = constraint->m_bodies[k]->index;
+
                 m_state.a_x[body] += m_state.r_x[j_f * 2 + k];
                 m_state.a_y[body] += m_state.r_y[j_f * 2 + k];
                 m_state.a_theta[body] += m_state.r_t[j_f * 2 + k];
@@ -341,6 +296,4 @@ void atg_scs::OptimizedNsvRigidBodySystem::processConstraints(
         std::chrono::duration_cast<std::chrono::microseconds>(s1 - s0 + s3 - s2).count();
     *solveTime =
         std::chrono::duration_cast<std::chrono::microseconds>(s2 - s1).count();
-
-    REG_DEBUG(regression::debugcounter::inc());
 }
