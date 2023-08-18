@@ -1,4 +1,4 @@
-#include "../include/generic_rigid_body_system.h"
+#include "../include/rigid_body_system_generic.h"
 
 #include <chrono>
 
@@ -126,30 +126,42 @@ void atg_scs::GenericRigidBodySystem::processConstraints(
 
         const int n_f = m_constraints[j]->getConstraintCount();
         for (int k = 0; k < n_f; ++k, ++j_f) {
+            
             for (int i = 0; i < m_constraints[j]->m_bodyCount; ++i) {
                 const int index = m_constraints[j]->m_bodies[i]->index;
 
                 if (index == -1) continue;
 
-                m_iv.J_sparse.setBlock(j_f, i, index);
-                m_iv.J_dot_sparse.setBlock(j_f, i, index);
+                #ifndef ATG_S2C_USE_EIGEN_SPARSE
+                m_iv.J_sparse.setBlock(j_f, i, index,
+                    constraintOutput.J[k][i + 0],
+                    constraintOutput.J[k][i + 1],
+                    constraintOutput.J[k][i + 2]
+                        
+                );
+                m_iv.J_dot_sparse.setBlock(j_f, i, index,
+                    constraintOutput.J_dot[k][i + 0],
+                    constraintOutput.J_dot[k][i + 1],
+                    constraintOutput.J_dot[k][i + 2]
+                    );
+                #else
+                m_iv.J_sparse.setBlock(j_f, index * 3,
+                    constraintOutput.J[k][i + 0],
+                    constraintOutput.J[k][i + 1],
+                    constraintOutput.J[k][i + 2]
+
+                );
+                m_iv.J_dot_sparse.setBlock(j_f, index * 3,
+                    constraintOutput.J_dot[k][i + 0],
+                    constraintOutput.J_dot[k][i + 1],
+                    constraintOutput.J_dot[k][i + 2]
+                );
+                #endif
             }
-
-            for (int i = 0; i < m_constraints[j]->m_bodyCount * 3; ++i) {
-                const int index = m_constraints[j]->m_bodies[i / 3]->index;
-
-                if (index == -1) continue;
-
-                m_iv.J_sparse.set(j_f, i / 3, i % 3,
-                        constraintOutput.J[k][i]);
-
-                m_iv.J_dot_sparse.set(j_f, i / 3, i % 3,
-                        constraintOutput.J_dot[k][i]);
-
-                m_iv.ks.set(0, j_f, constraintOutput.ks[k]);
-                m_iv.kd.set(0, j_f, constraintOutput.kd[k]);
-                m_iv.C.set(0, j_f, constraintOutput.C[k]);
-            }
+            
+            m_iv.ks.set(0, j_f, constraintOutput.ks[k]);
+            m_iv.kd.set(0, j_f, constraintOutput.kd[k]);
+            m_iv.C.set(0, j_f, constraintOutput.C[k]);
         }
     }
 
@@ -199,9 +211,15 @@ void atg_scs::GenericRigidBodySystem::processConstraints(
 
     for (int i = 0; i < m_f; ++i) {
         for (int j = 0; j < 2; ++j) {
+    #ifndef ATG_S2C_USE_EIGEN_SPARSE
             m_state.r_x[i * 2 + j] = m_iv.sreg0.get(i, j, 0);
             m_state.r_y[i * 2 + j] = m_iv.sreg0.get(i, j, 1);
             m_state.r_t[i * 2 + j] = m_iv.sreg0.get(i, j, 2);
+    #else
+            m_state.r_x[i * 2 + j] = m_iv.sreg0.get(i, j + 0);
+            m_state.r_y[i * 2 + j] = m_iv.sreg0.get(i, j + 1);
+            m_state.r_t[i * 2 + j] = m_iv.sreg0.get(i, j + 2);
+    #endif
         }
     }
 

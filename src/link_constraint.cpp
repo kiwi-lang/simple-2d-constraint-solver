@@ -2,11 +2,18 @@
 
 #include <cmath>
 
+
+// http://www.chrishecker.com/Physics_References
+// http://www.chrishecker.com/images/d/df/Gdmphys1.pdf
+
 atg_scs::LinkConstraint::LinkConstraint() : Constraint(2, 2) {
     m_local_x_1 = m_local_y_1 = 0.0;
     m_local_x_2 = m_local_y_2 = 0.0;
+    // Damping Coefficient
     m_ks = 10.0;
+    // Stiffness Coefficient
     m_kd = 1.0;
+
     m_maxForce = DBL_MAX;
 }
 
@@ -21,13 +28,14 @@ void atg_scs::LinkConstraint::calculate(
     const int body = m_bodies[0]->index;
     const int linkedBody = m_bodies[1]->index;
 
+    // P is position
     const double q1 = state->p_x[body];
     const double q2 = state->p_y[body];
-    const double q3 = state->theta[body];
+    const double q3 = state->theta[body]; // Angle
 
     const double q4 = state->p_x[linkedBody];
     const double q5 = state->p_y[linkedBody];
-    const double q6 = state->theta[linkedBody];
+    const double q6 = state->theta[linkedBody]; // Angular Velocity
 
     const double q3_dot = state->v_theta[body];
     const double q6_dot = state->v_theta[linkedBody];
@@ -47,10 +55,14 @@ void atg_scs::LinkConstraint::calculate(
     const double C1 = bodyX - linkedBodyX;
     const double C2 = bodyY - linkedBodyY;
 
+    // Jacobian i.e partial derivative of the system (3 x 6) (MaxConstraintCount) x (3 * MaxBodyCount)
+    //
+    // J1 Linear Axis ?
     output->J[0][0] = 1.0;
     output->J[0][1] = 0.0;
     output->J[0][2] = -sin_q3 * m_local_x_1 - cos_q3 * m_local_y_1;
 
+    // J2 Angular Acis ?
     output->J[1][0] = 0.0;
     output->J[1][1] = 1.0;
     output->J[1][2] = cos_q3 * m_local_x_1 - sin_q3 * m_local_y_1;
@@ -63,6 +75,7 @@ void atg_scs::LinkConstraint::calculate(
     output->J[1][4] = -1.0;
     output->J[1][5] = -cos_q6 * m_local_x_2 + sin_q6 * m_local_y_2;
 
+    // Derivative of J
     output->J_dot[0][0] = 0;
     output->J_dot[0][1] = 0;
     output->J_dot[0][2] =

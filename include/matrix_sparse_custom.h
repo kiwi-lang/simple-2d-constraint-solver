@@ -9,6 +9,7 @@ namespace atg_scs {
     class Matrix;
 
     template <int T_Stride = 3, int T_Entries = 2>
+    // 
     class SparseMatrix {
         public:
             SparseMatrix() {
@@ -31,7 +32,10 @@ namespace atg_scs {
             }
 
             void resize(int width, int height) {
-                if (width == m_width && height == m_height) return;
+                if (width == m_width && height == m_height)
+                {
+                    return;
+                } 
                 else if (height > m_capacityHeight) {
                     destroy();
 
@@ -100,12 +104,24 @@ namespace atg_scs {
                 }
             }
 
-            inline void setBlock(int row, int entry, uint8_t index) {
+            // inline void setBlock(int row, int entry, uint8_t index) {
+            //     assert(row >= 0 && row < m_height);
+            //     assert(entry >= 0 && entry < T_Entries);
+            //     assert(index < m_width);
+
+            //     m_blockData[row * T_Entries + entry] = index;
+            // }
+
+            inline void setBlock(int row, int entry, uint8_t index, double v1, double v2, double v3) {
                 assert(row >= 0 && row < m_height);
                 assert(entry >= 0 && entry < T_Entries);
                 assert(index < m_width);
 
                 m_blockData[row * T_Entries + entry] = index;
+
+                m_matrix[row][entry * T_Stride + 0] = v1;
+                m_matrix[row][entry * T_Stride + 1] = v2;
+                m_matrix[row][entry * T_Stride + 2] = v3;
             }
 
             inline void set(int row, int entry, int slice, double v) {
@@ -224,15 +240,11 @@ namespace atg_scs {
                         const uint8_t index = m_blockData[i * T_Entries + j];
                         if (index == 0xFF) continue;
 
-                        target->setBlock(i, j, index);
-
-                        for (int k = 0; k < T_Stride; ++k) {
-                            target->set(
-                                i,
-                                j,
-                                k,
-                                scale.get(0, index * T_Stride + k) * m_matrix[i][j * T_Stride + k]);
-                        }
+                        target->setBlock(i, j, index,
+                            scale.get(0, index * T_Stride + 0) * m_matrix[i][j * T_Stride + 0],
+                            scale.get(0, index * T_Stride + 1) * m_matrix[i][j * T_Stride + 1],
+                            scale.get(0, index * T_Stride + 2) * m_matrix[i][j * T_Stride + 2]
+                        );
                     }
                 }
             }
@@ -248,15 +260,12 @@ namespace atg_scs {
                         const uint8_t index = m_blockData[i * T_Entries + j];
                         if (index == 0xFF) continue;
 
-                        target->setBlock(i, j, index);
-
-                        for (int k = 0; k < T_Stride; ++k) {
-                            target->set(
-                                i,
-                                j,
-                                k,
-                                scale.get(0, i) * m_matrix[i][j * T_Stride + k]);
-                        }
+                        target->setBlock(i, j, index,
+                            scale.get(0, i) * m_matrix[i][j * T_Stride + 0],
+                            scale.get(0, i) * m_matrix[i][j * T_Stride + 1],
+                            scale.get(0, i) * m_matrix[i][j * T_Stride + 2]
+                            
+                        );
                     }
                 }
             }

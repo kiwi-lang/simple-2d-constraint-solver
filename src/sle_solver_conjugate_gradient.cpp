@@ -1,4 +1,4 @@
-#include "../include/conjugate_gradient_sle_solver.h"
+#include "../include/sle_solver_conjugate_gradient.h"
 
 #include <cmath>
 #include <assert.h>

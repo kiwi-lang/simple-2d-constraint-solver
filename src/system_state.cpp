@@ -71,6 +71,13 @@ void atg_scs::SystemState::copy(const SystemState *state) {
     std::memcpy((void *)r_t, (void *)state->r_t, sizeof(double) * n_c * 2);
 }
 
+template<typename T>
+T* new_array(std::size_t t) {
+    T* arr = new T[t];
+    memset(arr, 0, t);
+    return arr;
+}
+
 void atg_scs::SystemState::resize(int bodyCount, int constraintCount) {
     if (n >= bodyCount && n_c >= constraintCount) {
         return;
@@ -81,28 +88,28 @@ void atg_scs::SystemState::resize(int bodyCount, int constraintCount) {
     n = bodyCount;
     n_c = constraintCount;
 
-    indexMap = new int[n_c];
+    indexMap = new_array<int>(n_c);
 
-    a_theta = new double[n];
-    v_theta = new double[n];
-    theta = new double[n];
+    a_theta = new_array<double>(n);
+    v_theta = new_array<double>(n);
+    theta = new_array<double>(n);
 
-    a_x = new double[n];
-    a_y = new double[n];
-    v_x = new double[n];
-    v_y = new double[n];
-    p_x = new double[n];
-    p_y = new double[n];
+    a_x = new_array<double>(n);
+    a_y = new_array<double>(n);
+    v_x = new_array<double>(n);
+    v_y = new_array<double>(n);
+    p_x = new_array<double>(n);
+    p_y = new_array<double>(n);
 
-    f_x = new double[n];
-    f_y = new double[n];
-    t = new double[n];
+    f_x = new_array<double>(n);
+    f_y = new_array<double>(n);
+    t = new_array<double>(n);
 
-    m = new double[n];
+    m = new_array<double>(n);
 
-    r_x = new double[(size_t)n_c * 2];
-    r_y = new double[(size_t)n_c * 2];
-    r_t = new double[(size_t)n_c * 2];
+    r_x = new_array<double>((size_t)n_c * 2);
+    r_y = new_array<double>((size_t)n_c * 2);
+    r_t = new_array<double>((size_t)n_c * 2);
 }
 
 void atg_scs::SystemState::destroy() {

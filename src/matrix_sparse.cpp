@@ -1,4 +1,4 @@
-#include "../include/sparse_matrix.h"
+#include "../include/matrix_sparse.h"
 
 #include "../include/matrix.h"
 
