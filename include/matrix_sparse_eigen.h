@@ -125,8 +125,8 @@ namespace atg_scs {
                 auto vector = scale.m_matrix.col(0).transpose().array();
                 target->m_matrix = (m_matrix.array().rowwise() * vector).matrix();
 
-                assert(target->m_matrix.getHeight() == getHeight());
-                assert(target->m_matrix.getWidth() == getWidth());
+                assert(target->m_matrix.rows() == getHeight());
+                assert(target->m_matrix.cols() == getWidth());
             }
 
             void leftScale(Matrix &scale, SparseMatrix<T_Stride> *target) {
@@ -134,8 +134,8 @@ namespace atg_scs {
                 auto vector = scale.m_matrix.col(0).array();
                 target->m_matrix = (m_matrix.array().colwise() * vector).matrix();
             
-                assert(target->m_matrix.getHeight() == getHeight());
-                assert(target->m_matrix.getWidth() == getWidth());
+                assert(target->m_matrix.rows() == getHeight());
+                assert(target->m_matrix.cols() == getWidth());
             }
 
             __forceinline int getWidth() const { return m_matrix.cols(); }
